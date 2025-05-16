@@ -1,38 +1,26 @@
 version: '3.8'
 
 services:
-  server:
+  backend:
     build:
-      context: ./server
+      context: ./backend
       dockerfile: Dockerfile
-    container_name: plantcare_backend_jenkins
+    container_name: plant-backend
     ports:
-      - "3200:3000"
-    environment:
-      - NODE_ENV=production
-      - PORT=3000
-      - MONGODB_URI=mongodb+srv://rumerjaved7:nZlh8VxWpiANvjh5@cluster0.dqasiyv.mongodb.net/ShopSphere?retryWrites=true
-    volumes:
-      - ./server:/app
-    network_mode: "host"  # ✅ Added this line to fix npm internet issue temporarily
+      - "5000:5000"
+    working_dir: /app
+    command: node server.js
+    network_mode: host
 
   frontend:
     build:
-      context: ./my-project
+      context: ./frontend
       dockerfile: Dockerfile
-    container_name: plantcare_frontend_jenkins
+    container_name: plant-frontend
     ports:
-      - "5200:5000"
-    environment:
-      - NODE_ENV=production
-      - PORT=5000
+      - "3000:3000"
+    working_dir: /app
+    command: npm start
     depends_on:
-      - server
-    volumes:
-      - ./my-project:/app
-    networks:
-      - plantcare-ci-network
-
-networks:
-  plantcare-ci-network:
-    driver: bridge
+      - backend
+    network_mode: host

@@ -1,11 +1,10 @@
 pipeline {
     agent any
 
-     environment {
-    PROJECT_NAME = "plantcare_ci"
-    COMPOSE_FILE = "docker-compose.yaml"  // change from .yml to .yaml here
-}
-
+    environment {
+        PROJECT_NAME = "plantcare_ci"
+        COMPOSE_FILE = "docker-compose.yaml"
+    }
 
     stages {
         stage('Checkout Code') {
@@ -17,7 +16,7 @@ pipeline {
         stage('Build Docker Images') {
             steps {
                 script {
-                    sh "docker-compose -p ${PROJECT_NAME} -f ${COMPOSE_FILE} build"
+                    sh "docker-compose -p ${PROJECT_NAME} -f ${COMPOSE_FILE} build || exit 1"
                 }
             }
         }
@@ -25,23 +24,26 @@ pipeline {
         stage('Run Containers') {
             steps {
                 script {
-                    sh "docker-compose -p ${PROJECT_NAME} -f ${COMPOSE_FILE} up -d"
+                    sh "docker-compose -p ${PROJECT_NAME} -f ${COMPOSE_FILE} up -d || exit 1"
                 }
             }
         }
 
         stage('Post Build') {
             steps {
-                echo "Jenkins pipeline has completed running your containers."
-                // Add any testing or health check scripts here if required
+                echo "✅ Jenkins pipeline has completed running your containers."
+                // Add testing scripts or curl health checks here if needed
             }
         }
     }
 
     post {
         always {
-            echo "Cleaning up: stopping and removing containers"
-            sh "docker-compose -p ${PROJECT_NAME} -f ${COMPOSE_FILE} down"
+            echo "🧹 Cleaning up: stopping and removing containers"
+            script {
+                // Use || true to avoid failure if containers don't exist
+                sh "docker-compose -p ${PROJECT_NAME} -f ${COMPOSE_FILE} down || true"
+            }
         }
     }
 }
