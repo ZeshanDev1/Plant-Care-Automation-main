@@ -1,10 +1,11 @@
 pipeline {
     agent any
 
-    environment {
-        PROJECT_NAME = "plantcare_ci"
-        COMPOSE_FILE = "docker-compose.yaml"
-    }
+     environment {
+    PROJECT_NAME = "plantcare_ci"
+    COMPOSE_FILE = "docker-compose.yaml"  // change from .yml to .yaml here
+}
+
 
     stages {
         stage('Checkout Code') {
