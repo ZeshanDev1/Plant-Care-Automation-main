@@ -1,20 +1,39 @@
 version: '3.8'
+
 services:
-  backend:
-    build: ./backend
-    container_name: backend-server-c
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: plantcare_backend_jenkins
     ports:
-      - '4001:4001'
+      - "3200:3000"          # Changed port to 3200 for backend
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - MONGODB_URI=mongodb+srv://rumerjaved7:nZlh8VxWpiANvjh5@cluster0.dqasiyv.mongodb.net/ShopSphere?retryWrites=true
     volumes:
-      - ./backend:/app
-      - /app/node_modules
+      - ./server:/app        # Attached volume for live code mounting
+    networks:
+      - plantcare-ci-network
+
   frontend:
-    build: ./frontend
-    container_name: frontend-c
+    build:
+      context: ./my-project
+      dockerfile: Dockerfile
+    container_name: plantcare_frontend_jenkins
     ports:
-      - '3000:3000'
+      - "5200:5000"          # Changed port to 5200 for frontend
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+    depends_on:
+      - server
     volumes:
-      - ./frontend:/react-app
-      - /react-app/node_modules
-    stdin_open: true
-    tty : true
+      - ./my-project:/app    # Attached volume for live code mounting
+    networks:
+      - plantcare-ci-network
+
+networks:
+  plantcare-ci-network:
+    driver: bridge
