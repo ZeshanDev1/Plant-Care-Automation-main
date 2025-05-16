@@ -3,7 +3,7 @@ version: '3.8'
 services:
   server:
     build:
-      context: ./server
+      context: ./backend 
       dockerfile: Dockerfile
     container_name: plantcare_backend_jenkins
     ports:
@@ -13,13 +13,13 @@ services:
       - PORT=3000
       - MONGODB_URI=mongodb+srv://rumerjaved7:nZlh8VxWpiANvjh5@cluster0.dqasiyv.mongodb.net/ShopSphere?retryWrites=true
     volumes:
-      - ./server:/app        # Attached volume for live code mounting
+      - ./backend:/app        # Attached volume for live code mounting
     networks:
       - plantcare-ci-network
 
   frontend:
     build:
-      context: ./my-project
+      context: ./frontend
       dockerfile: Dockerfile
     container_name: plantcare_frontend_jenkins
     ports:
@@ -30,7 +30,7 @@ services:
     depends_on:
       - server
     volumes:
-      - ./my-project:/app    # Attached volume for live code mounting
+      - ./frontend:/app    # Attached volume for live code mounting
     networks:
       - plantcare-ci-network
 
