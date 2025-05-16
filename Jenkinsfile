@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         PROJECT_NAME = "plantcare_ci"
-        COMPOSE_FILE = "docker-compose.yml"
+        COMPOSE_FILE = "docker-compose.yaml"
     }
 
     stages {
